@@ -6,7 +6,7 @@ const app = Router();
 
 app.route("/").get(
     asyncHandler((req, res) => {
-        throw new ApiError(404, "Test", new Error());
+        // throw new ApiError(404, "Test", new Error());
         return res.send("Hello World!");
     })
 );
