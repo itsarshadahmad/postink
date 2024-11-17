@@ -15,4 +15,4 @@ const login = (req, res) => {
     res.json({ token: "your_jwt_token" });
 };
 
-export default login;
+export { login };

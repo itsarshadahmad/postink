@@ -4,8 +4,8 @@ import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import fs from "fs";
 import path from "path";
-import errorHandler from "./middleware/errorHandler.middleware.js";
-import api from "./routers/api.js";
+import { errorHandler } from "./middleware/errorHandler.middleware.js";
+import { api } from "./routers/api.js";
 
 const app = express();
 

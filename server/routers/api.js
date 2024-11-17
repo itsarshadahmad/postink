@@ -1,8 +1,10 @@
-import home from "./home.routes.js";
+import { blogRouter } from "./blog.routes.js";
 import { Router } from "express";
+import { userRouter } from "./user.routes.js";
 
 const api = Router();
 
-api.use("/", home);
+api.use("/blog", blogRouter);
+api.use("/user", userRouter);
 
-export default api;
+export { api };
