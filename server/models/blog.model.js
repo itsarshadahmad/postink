@@ -1,5 +1,5 @@
 import { Blog } from "./blog.mongo.js";
-import { ApiError } from "../services/ApiError.js";
+import { ApiError } from "../utils/ApiError.js";
 
 async function getAllBlogsFromUserId(userId) {
     const blogs = await Blog.find({ createdBy: userId }).catch((err) => {
