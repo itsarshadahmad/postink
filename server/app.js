@@ -3,12 +3,19 @@ import cors from "cors";
 import morgan from "morgan";
 import fs from "fs";
 import path from "path";
-import {errorHandler} from "./middleware/errorHandler.middleware.js";
-import {api} from "./routers/api.js";
+import { errorHandler } from "./middleware/errorHandler.middleware.js";
+import { api } from "./routers/api.js";
 import passport from "passport";
 import passportConfig from "./config/passport.config.js";
 import session from "express-session";
-import connect from "connect-mongo"
+import MongoStore from "connect-mongo";
+import mongoose from "mongoose";
+import { config } from "dotenv";
+import cookieParser from "cookie-parser";
+
+config({
+    path: "./.env",
+});
 
 const app = express();
 
@@ -19,23 +26,34 @@ app.use(
     })
 );
 
-app.use(express.json({limit: "16kb"}));
-app.use(express.urlencoded({extended: true, limit: "16kb"}));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
-app.use(
-    session({
-        secret: process.env.SESSION_SECRET,
-        resave: false,
-        saveUninitialized: true,
-        cookie: {
-            maxAge: 60 * 60 * 24 * 30, // 30 days
-        },
-        store: connect()
-    })
-);
+app.use(cookieParser());
+
+if (mongoose.ConnectionStates.connected) {
+    const store = MongoStore.create({
+        mongoUrl: `${process.env.MONGODB_URI}/${process.env.DB_NAME}`,
+        collection: "sessions",
+        ttl: 14 * 24 * 60 * 60, // = 14 days. Default
+        autoRemove: "native", // Default
+    });
+
+    app.use(
+        session({
+            secret: process.env.SESSION_SECRET,
+            resave: false,
+            httpOnly: true,
+            secure: true,
+            maxAge: 1000 * 60 * 60 * 7,
+            saveUninitialized: false,
+            store: store,
+        })
+    );
+}
 
 // Passport config
-app.use(passportConfig(passport));
+passportConfig(passport);
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -59,4 +77,4 @@ app.use("/api", api);
 // Error handler middleware
 app.use(errorHandler);
 
-export {app};
+export { app };

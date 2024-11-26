@@ -21,12 +21,15 @@ async function findUserById(id) {
     });
 }
 
-async function createNewUser(username, fullName, email, password) {
-    const user = await User.create(username, fullName, email, password).catch(
-        (err) => {
-            throw new ApiError(500, "Error creating new user!", err);
-        }
-    );
+async function createNewUser({ username, fullName, email, password }) {
+    const user = await User.create({
+        username,
+        fullName,
+        email,
+        password,
+    }).catch((err) => {
+        throw new ApiError(500, "Error creating new user!", err);
+    });
     return user;
 }
 
@@ -61,6 +64,15 @@ async function deleteUserByEmail(email) {
     return deletedUser;
 }
 
+async function removeRefreshToken(_id) {
+    return await User.updateOne(
+        { _id },
+        { $set: { refreshToken: null } }
+    ).catch((err) => {
+        throw new ApiError(500, "Error removing refresh token!", err);
+    });
+}
+
 export {
     findUserByUsername,
     findUserByEmail,
@@ -68,4 +80,6 @@ export {
     createNewUser,
     updateUser,
     deleteUserByEmail,
+    updateUserEmail,
+    removeRefreshToken,
 };

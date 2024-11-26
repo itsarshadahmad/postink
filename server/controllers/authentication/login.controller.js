@@ -1,18 +1,59 @@
-const login = (req, res) => {
-    const { username, fullName, email, password } = req.body;
+import { findUserByEmail } from "../../models/user.model.js";
+import { ApiError } from "../../utils/ApiError.js";
+import { ApiResponse } from "../../utils/ApiResponse.js";
+import { asyncHandler } from "../../utils/asyncHandler.js";
 
-    if (
-        [username, fullName, email, password].some(
-            (field) => field?.trim() === ""
-        )
-    ) {
+const handleUserLogin = asyncHandler(async (req, res) => {
+    const { email, password } = req.body;
+
+    if ([email, password].some((field) => field?.trim() === "")) {
         throw new ApiError(400, "All fields are required");
     }
 
-    // Implement authentication logic
-    // Check if user exists in the database
-    // Generate JWT token and return it as a response
-    res.json({ token: "your_jwt_token" });
-};
+    const user = await findUserByEmail(email);
+    if (!user) {
+        throw new ApiError(401, "Invalid email or password");
+    }
+    const isPasswordCorrect = await user.isPasswordCorrect(password);
+    if (!isPasswordCorrect) {
+        throw new ApiError(401, "Invalid email or password");
+    }
 
-export { login };
+    const accessToken = user.generateAccessToken();
+    const refreshToken = await user.generateRefreshToken();
+    user.refreshToken = refreshToken;
+    await user.save();
+
+    const accessTokenConfig = {
+        httpOnly: true,
+        secure: true, // Set to true in production for HTTPS
+        sameSite: "Strict",
+        maxAge: 15 * 60 * 1000, // 15 minutes
+    };
+
+    const refreshTokenConfig = {
+        httpOnly: true,
+        secure: true,
+        sameSite: "Strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    };
+
+    return res
+        .status(200)
+        .cookie("accessToken", accessToken, accessTokenConfig)
+        .cookie("refreshToken", refreshToken, refreshTokenConfig)
+        .send(
+            new ApiResponse(
+                200,
+                {
+                    email: user.email,
+                    _id: user._id,
+                    username: user.username,
+                    blogs: user.blogs,
+                },
+                "User authenticated!"
+            )
+        );
+});
+
+export { handleUserLogin };
