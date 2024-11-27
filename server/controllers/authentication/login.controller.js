@@ -48,7 +48,6 @@ const handleUserLogin = asyncHandler(async (req, res) => {
                 {
                     email: user.email,
                     _id: user._id,
-                    username: user.username,
                     blogs: user.blogs,
                 },
                 "User authenticated!"

@@ -2,52 +2,62 @@ import { Schema, model } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-const userSchema = new Schema({
-    username: {
-        type: String,
-        required: true,
-        unique: true,
-        lowercase: true,
-        trim: true,
-        index: true,
-    },
-    fullName: {
-        type: String,
-        required: true,
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-        lowercase: true,
-        trim: true,
-        validate: {
-            validator: function (value) {
-                const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                return re.test(value);
+const userSchema = new Schema(
+    {
+        type: {
+            type: String,
+            required: true,
+            enum: ["email", "google"],
+        },
+        fullName: {
+            type: String,
+            required: true,
+        },
+        email: {
+            type: String,
+            required: true,
+            unique: true,
+            lowercase: true,
+            trim: true,
+            validate: {
+                validator: function (value) {
+                    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    return re.test(value);
+                },
+                message: "Invalid email format",
             },
-            message: "Invalid email format",
+            index: true,
         },
-        index: true,
-    },
-    password: {
-        type: String,
-        required: true,
-    },
-    blogs: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: "Blog",
+        password: {
+            type: String,
+            // required: true,
+            required: function () {
+                return this.type === "email";
+            },
         },
-    ],
-    googleId: {
-        type: String,
-        unique: true,
+        blogs: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: "Blog",
+            },
+        ],
+        googleId: {
+            type: String,
+            required: function () {
+                return this.type === "google";
+            },
+            unique: true,
+            sparse: true,
+        },
+        avatar: {
+            type: String,
+        },
+        refreshToken: {
+            type: String,
+        },
     },
-    refreshToken: {
-        type: String,
-    },
-});
+    { timestamps: true }
+);
 
 userSchema.pre("save", async function (next) {
     if (!this.isModified("password")) return next();

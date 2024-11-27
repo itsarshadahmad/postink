@@ -2,34 +2,36 @@ import { Router } from "express";
 import passport from "passport";
 import { handleUserSignup } from "../controllers/authentication/signup.controller.js";
 import { handleUserLogin } from "../controllers/authentication/login.controller.js";
-import {
-    checkAuthentication,
-    verifyJWT,
-} from "../middleware/auth.middleware.js";
 import { handleUserLogout } from "../controllers/authentication/logout.controller.js";
 
 const userRouter = Router();
 
 userRouter.route("/login").post(handleUserLogin);
 userRouter.route("/signup").post(handleUserSignup);
-// userRouter.route("/test").get(verifyJWT, (req, res) => {
-//     console.log(req.user);
-//     return res.json("User routes");
-// });
 
-// TODO: Conform this route
-// userRouter.route("/auth/google").get(
-//     passport.authenticate("google", {
-//         scope: ["profile", "email"],
-//         callbackURL: "/auth/google/callback",
-//     })
-// );
+// TODO: REMOVE THIS TEST ROUTE
+userRouter.route("/google").get((req, res) => {
+    res.send(
+        "<form method='post' action='/api/user/auth/google'><button type='submit'>Google OAuth</button></form>"
+    );
+});
 
-// TODO: fix callback of get method
-// userRouter.route("/auth/google/callback").get({
-//     failureRedirect: "/login",
-//     successRedirect: "/",
-// });
+userRouter.route("/auth/google").post(
+    passport.authenticate("google", {
+        scope: ["profile", "email"],
+        callbackURL: "/api/user/auth/google/callback",
+    })
+);
+
+userRouter.route("/auth/google/callback").get(
+    passport.authenticate("google", {
+        failureRedirect: "/login",
+        successRedirect: "/",
+    }),
+    (req, res) => {
+        res.json({ ok: "Success" });
+    }
+);
 
 userRouter.route("/logout").post(handleUserLogout);
 

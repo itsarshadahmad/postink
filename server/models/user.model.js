@@ -1,13 +1,6 @@
 import { User } from "./user.mongo.js";
 import { ApiError } from "../utils/ApiError.js";
 
-async function findUserByUsername(username) {
-    const user = await User.findOne({ username }).catch((err) => {
-        throw new ApiError(500, "Error finding user by username!", err);
-    });
-    return user;
-}
-
 async function findUserByEmail(email) {
     const user = await User.findOne({ email }).catch((err) => {
         throw new ApiError(500, "Error finding user by email!", err);
@@ -21,9 +14,9 @@ async function findUserById(id) {
     });
 }
 
-async function createNewUser({ username, fullName, email, password }) {
+async function createNewUser({ fullName, email, password }) {
     const user = await User.create({
-        username,
+        type: "email",
         fullName,
         email,
         password,
@@ -42,9 +35,9 @@ async function updateUserEmail(_id, email) {
     return user;
 }
 
-async function updateUser(username, fullName, email, password) {
+async function updateUser(fullName, email, password) {
     const updatedUser = await User.findOneAndUpdate(
-        { username },
+        { email },
         {
             fullName,
             email,
@@ -73,8 +66,40 @@ async function removeRefreshToken(_id) {
     });
 }
 
+async function findUserByFilter(filter) {
+    return await User.find(filter).catch((err) => {
+        throw new ApiError(500, "Error finding users by filter!", err);
+    });
+}
+
+async function findUserByGoogleId(googleId) {
+    const user = await User.where(googleId).findOne();
+    return user;
+}
+
+async function createUserForOAuth({
+    googleId,
+    fullName,
+    email,
+    avatar,
+    refreshToken,
+}) {
+    try {
+        const user = await User.create({
+            type: "google",
+            googleId,
+            fullName,
+            email,
+            avatar,
+            refreshToken,
+        });
+        return user;
+    } catch (err) {
+        throw new ApiError(500, "Error creating OAuth user!", err);
+    }
+}
+
 export {
-    findUserByUsername,
     findUserByEmail,
     findUserById,
     createNewUser,
@@ -82,4 +107,7 @@ export {
     deleteUserByEmail,
     updateUserEmail,
     removeRefreshToken,
+    findUserByFilter,
+    createUserForOAuth,
+    findUserByGoogleId,
 };
