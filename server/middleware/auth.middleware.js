@@ -50,11 +50,8 @@ const regenerateAccessToken = asyncHandler(async (req, res, next) => {
             throw new ApiError(403, "Invalid refresh token");
         }
 
-        // Generate a new access token
+        // Generate & send new access token
         const newAccessToken = await user.generateAccessToken();
-
-        // Send new access token as a cookie
-        console.log(req.originalUrl);
         return res
             .cookie("accessToken", newAccessToken, {
                 httpOnly: true,

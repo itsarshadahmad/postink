@@ -28,14 +28,14 @@ const handleUserLogin = asyncHandler(async (req, res) => {
         httpOnly: true,
         secure: true, // Set to true in production for HTTPS
         sameSite: "Strict",
-        maxAge: 15 * 60 * 1000, // 15 minutes
+        maxAge: process.env.REFRESH_TOKEN_EXPIRY, // 15 minutes
     };
 
     const refreshTokenConfig = {
         httpOnly: true,
         secure: true,
         sameSite: "Strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        maxAge: process.env.ACCESS_TOKEN_EXPIRY,
     };
 
     return res
