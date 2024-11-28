@@ -1,7 +1,7 @@
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { findUserById } from "../models/user.model.js";
-import { decodeAccessToken } from "../utils/token.js";
+import { decodeAccessToken, decodeRefreshToken } from "../utils/token.js";
 
 const verifyJWT = asyncHandler(async (req, _, next) => {
     try {
@@ -30,4 +30,40 @@ const verifyJWT = asyncHandler(async (req, _, next) => {
     }
 });
 
-export { verifyJWT };
+const regenerateAccessToken = asyncHandler(async (req, res, next) => {
+    try {
+        const accessToken = req.cookies?.accessToken;
+        if (accessToken) {
+            next();
+        }
+
+        const refreshToken = req.cookies?.refreshToken;
+        if (!refreshToken) {
+            throw new ApiError(401, "Unauthorized request");
+        }
+
+        // Verify refresh token (e.g., compare with stored token in DB)
+        const decodedRefreshToken = await decodeRefreshToken(refreshToken);
+        const user = await findUserById(decodedRefreshToken?._id);
+
+        if (refreshToken !== user.refreshToken) {
+            throw new ApiError(403, "Invalid refresh token");
+        }
+
+        // Generate a new access token
+        const newAccessToken = await user.generateAccessToken();
+
+        // Send new access token as a cookie
+        console.log(req.originalUrl);
+        return res
+            .cookie("accessToken", newAccessToken, {
+                httpOnly: true,
+                secure: true,
+            })
+            .redirect(`${req.originalUrl}`);
+    } catch (err) {
+        throw new ApiError(403, "Error regenerating tokens", err);
+    }
+});
+
+export { verifyJWT, regenerateAccessToken };

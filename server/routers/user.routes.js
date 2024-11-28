@@ -3,6 +3,10 @@ import passport from "passport";
 import { handleUserSignup } from "../controllers/authentication/signup.controller.js";
 import { handleUserLogin } from "../controllers/authentication/login.controller.js";
 import { handleUserLogout } from "../controllers/authentication/logout.controller.js";
+import {
+    regenerateAccessToken,
+    verifyJWT,
+} from "../middleware/auth.middleware.js";
 
 const userRouter = Router();
 
@@ -16,6 +20,12 @@ userRouter.route("/google").get((req, res) => {
     );
 });
 
+userRouter
+    .route("/protected")
+    .get(regenerateAccessToken, verifyJWT, (req, res) => {
+        res.json({ ok: "Success" });
+    });
+
 userRouter.route("/auth/google").post(
     passport.authenticate("google", {
         scope: ["profile", "email"],
@@ -26,10 +36,27 @@ userRouter.route("/auth/google").post(
 userRouter.route("/auth/google/callback").get(
     passport.authenticate("google", {
         failureRedirect: "/login",
-        successRedirect: "/",
+        // successRedirect: "/",
     }),
     (req, res) => {
-        res.json({ ok: "Success" });
+        const accessToken = req.user.generateAccessToken();
+        let refreshToken = req.user.refreshToken;
+        if (!refreshToken) {
+            refreshToken = req.user.generateRefreshToken();
+        }
+
+        res.cookie("accessToken", accessToken, {
+            httpOnly: true,
+            secure: true,
+            maxAge: 24 * 60 * 60,
+        });
+        res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: true,
+            maxAge: 14 * 24 * 60 * 60,
+        });
+        // TODO: redirect to client
+        return res.redirect("/api/user/google");
     }
 );
 

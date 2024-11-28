@@ -28,8 +28,9 @@ export default function (passport) {
                     fullName: profile.displayName,
                     email: profile.emails[0].value,
                     avatar: profile.photos[0].value,
-                    refreshToken: refreshToken,
                 });
+                newUser.refreshToken = newUser.generateRefreshToken();
+                newUser.save();
                 return done(null, newUser);
             }
         )
