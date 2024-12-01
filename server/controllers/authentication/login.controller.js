@@ -55,4 +55,24 @@ const handleUserLogin = asyncHandler(async (req, res) => {
         );
 });
 
-export { handleUserLogin };
+const handleOAuthGoogleCallback = asyncHandler(async (req, res) => {
+    const accessToken = req.user.generateAccessToken();
+    let refreshToken = req.user.refreshToken;
+    if (!refreshToken) {
+        refreshToken = req.user.generateRefreshToken();
+    }
+
+    res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        secure: true,
+        maxAge: 24 * 60 * 60 * 1000,
+    });
+    res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: true,
+        maxAge: 14 * 24 * 60 * 60 * 1000,
+    });
+    return res.redirect(process.env.CLIENT_URL);
+});
+
+export { handleUserLogin, handleOAuthGoogleCallback };

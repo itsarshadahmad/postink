@@ -14,12 +14,13 @@ async function findUserById(id) {
     });
 }
 
-async function createNewUser({ fullName, email, password }) {
+async function createNewUser({ fullName, email, password, avatar }) {
     const user = await User.create({
         type: "email",
         fullName,
         email,
         password,
+        avatar,
     }).catch((err) => {
         throw new ApiError(500, "Error creating new user!", err);
     });

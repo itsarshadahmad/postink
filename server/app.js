@@ -10,12 +10,8 @@ import passportConfig from "./config/passport.config.js";
 import session from "express-session";
 import MongoStore from "connect-mongo";
 import mongoose from "mongoose";
-import { config } from "dotenv";
+import "dotenv/config";
 import cookieParser from "cookie-parser";
-
-config({
-    path: "./.env",
-});
 
 const app = express();
 
@@ -28,7 +24,7 @@ app.use(
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static("public"));
+app.use("/uploads", express.static("uploads"));
 app.use(cookieParser());
 
 if (mongoose.ConnectionStates.connected) {

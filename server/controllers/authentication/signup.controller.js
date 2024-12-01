@@ -8,7 +8,18 @@ const handleUserSignup = asyncHandler(async (req, res) => {
     if ([email, password, fullName].some((field) => field?.trim() === "")) {
         throw new ApiError(400, "All fields are required");
     }
-    const user = await createNewUser({ email, password, fullName });
+
+    const SERVER_URL = req.protocol + "://" + req.get("host");
+    const avatar = req?.file?.filename
+        ? SERVER_URL + "/uploads/" + req?.file?.filename
+        : undefined;
+
+    const user = await createNewUser({
+        email,
+        password,
+        fullName,
+        avatar,
+    });
     const accessToken = user.generateAccessToken();
     const refreshToken = user.generateRefreshToken();
     user.refreshToken = refreshToken;
@@ -18,6 +29,7 @@ const handleUserSignup = asyncHandler(async (req, res) => {
         email: user.email,
         fullName: user.fullName,
         blogs: user.blogs,
+        avatar: user?.avatar,
     };
 
     return res
