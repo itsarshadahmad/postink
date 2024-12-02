@@ -9,6 +9,7 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
 import { createNewBlog } from "../../models/blog.model.js";
 import { ApiError } from "../../utils/ApiError.js";
+import { removeImage } from "../../utils/removeImage.js";
 
 const getAllLatestBlogs = asyncHandler(async (req, res) => {
     const { page, limit } = req.query;
@@ -78,11 +79,11 @@ const handleUpdateBlogById = asyncHandler(async (req, res) => {
 const handleDeleteBlogById = asyncHandler(async (req, res) => {
     const userId = req.user._id;
     const { blogId } = req.params;
-    console.log(blogId);
     const response = await deleteBlogById(blogId, userId);
-    return res.send(
-        new ApiResponse(200, response, "Blog deleted successfully")
-    );
+    removeImage(response.coverImage);
+    return res
+        .status(200)
+        .json(new ApiResponse(200, response, "Blog deleted successfully"));
 });
 
 export {

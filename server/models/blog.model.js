@@ -44,9 +44,9 @@ async function getAllBlogsByDate(page = 1, limit = 10) {
 async function createNewBlog(userId, title, content, coverImage) {
     const blog = await Blog.create({
         createdBy: userId,
-        title: title,
-        content: content,
-        coverImage: coverImage,
+        title,
+        content,
+        coverImage,
     }).catch((err) => {
         throw new ApiError(500, "Error creating new blog!", err);
     });
