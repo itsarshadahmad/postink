@@ -64,16 +64,20 @@ const handleUpdateBlogById = asyncHandler(async (req, res) => {
         : undefined;
 
     const { title, content } = req.body;
-    const blog = await updateBlogById(
+    const blog = await getBlogById(blogId);
+    const updatedBlog = await updateBlogById(
         userId,
         blogId,
         title,
         content,
         coverImage
     );
+    if (updatedBlog.coverImage !== blog.coverImage) {
+        removeImage(blog.coverImage);
+    }
     return res
         .status(200)
-        .json(new ApiResponse(200, blog, "Blog updated successfully"));
+        .json(new ApiResponse(200, updatedBlog, "Blog updated successfully"));
 });
 
 const handleDeleteBlogById = asyncHandler(async (req, res) => {
