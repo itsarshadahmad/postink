@@ -16,9 +16,9 @@ import {
 const blogRouter = Router();
 
 blogRouter.route("/").get(getAllLatestBlogs);
-blogRouter.route("/:id").get(getBlogByBlogId);
+blogRouter.route("/:blogId").get(getBlogByBlogId);
 blogRouter
-    .route("/:userId")
+    .route("/user/:userId")
     .get(regenerateAccessToken, verifyJWT, getAllBlogsOfUserById);
 blogRouter
     .route("/new")
@@ -29,15 +29,15 @@ blogRouter
         handleCreateNewBlog
     );
 blogRouter
-    .route("/update")
-    .put(
+    .route("/update/:blogId")
+    .patch(
         upload.single("coverImage"),
         regenerateAccessToken,
         verifyJWT,
         handleUpdateBlogById
     );
 blogRouter
-    .route("/delete")
+    .route("/delete/:blogId")
     .delete(regenerateAccessToken, verifyJWT, handleDeleteBlogById);
 
 export { blogRouter };

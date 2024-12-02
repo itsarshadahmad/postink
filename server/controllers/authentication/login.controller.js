@@ -3,6 +3,18 @@ import { ApiError } from "../../utils/ApiError.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 
+const accessTokenConfig = {
+    httpOnly: true,
+    secure: true,
+    maxAge: 24 * 60 * 60 * 1000,
+};
+
+const refreshTokenConfig = {
+    httpOnly: true,
+    secure: true,
+    maxAge: 14 * 24 * 60 * 60 * 1000,
+};
+
 const handleUserLogin = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
 
@@ -24,25 +36,11 @@ const handleUserLogin = asyncHandler(async (req, res) => {
     user.refreshToken = refreshToken;
     await user.save();
 
-    const accessTokenConfig = {
-        httpOnly: true,
-        secure: true, // Set to true in production for HTTPS
-        sameSite: "Strict",
-        maxAge: process.env.REFRESH_TOKEN_EXPIRY, // 15 minutes
-    };
-
-    const refreshTokenConfig = {
-        httpOnly: true,
-        secure: true,
-        sameSite: "Strict",
-        maxAge: process.env.ACCESS_TOKEN_EXPIRY,
-    };
-
     return res
         .status(200)
         .cookie("accessToken", accessToken, accessTokenConfig)
         .cookie("refreshToken", refreshToken, refreshTokenConfig)
-        .send(
+        .json(
             new ApiResponse(
                 200,
                 {
@@ -62,17 +60,10 @@ const handleOAuthGoogleCallback = asyncHandler(async (req, res) => {
         refreshToken = req.user.generateRefreshToken();
     }
 
-    res.cookie("accessToken", accessToken, {
-        httpOnly: true,
-        secure: true,
-        maxAge: 24 * 60 * 60 * 1000,
-    });
-    res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: true,
-        maxAge: 14 * 24 * 60 * 60 * 1000,
-    });
-    return res.redirect(process.env.CLIENT_URL);
+    return res
+        .cookie("accessToken", accessToken, accessTokenConfig)
+        .cookie("refreshToken", refreshToken, refreshTokenConfig)
+        .json(new ApiResponse(200, { success: true }, "User Authenticated!"));
 });
 
 export { handleUserLogin, handleOAuthGoogleCallback };

@@ -37,7 +37,7 @@ const handleCreateNewBlog = asyncHandler(async (req, res) => {
 });
 
 const getBlogByBlogId = asyncHandler(async (req, res) => {
-    const blogId = req.params.id;
+    const { blogId } = req.params;
     const blog = await getBlogById(blogId);
     if (!blog) {
         throw new ApiError(404, "Blog not found");
@@ -50,22 +50,39 @@ const getAllBlogsOfUserById = asyncHandler(async (req, res) => {
     const blogs = await getAllBlogsFromUserId(userId);
     return res
         .status(200)
-        .send(new ApiResponse(200, blogs, "User blogs retained successfully"));
+        .json(new ApiResponse(200, blogs, "User blogs retained successfully"));
 });
 
 const handleUpdateBlogById = asyncHandler(async (req, res) => {
-    const { title, content, coverImage, blogId, userId } = req.body;
-    // TODO: Authenticate userId with blog createdBy to update, else reject
-    const blog = await updateBlogById(blogId, title, content, coverImage);
-    return res.send(new ApiResponse(200, blog, "Blog updated successfully"));
+    const userId = req.user._id;
+    const { blogId } = req.params;
+
+    const SERVER_URL = req.protocol + "://" + req.get("host");
+    const coverImage = req?.file?.filename
+        ? SERVER_URL + "/uploads/" + req?.file?.filename
+        : undefined;
+
+    const { title, content } = req.body;
+    const blog = await updateBlogById(
+        userId,
+        blogId,
+        title,
+        content,
+        coverImage
+    );
+    return res
+        .status(200)
+        .json(new ApiResponse(200, blog, "Blog updated successfully"));
 });
 
 const handleDeleteBlogById = asyncHandler(async (req, res) => {
-    const { blogId, userId } = req.params;
-    // const user = await getUserById(userId);
-    // TODO: If user.id is same as blog createdBy then delete else reject
-    await deleteBlogById(blogId);
-    return res.send(new ApiResponse(200, null, "Blog deleted successfully"));
+    const userId = req.user._id;
+    const { blogId } = req.params;
+    console.log(blogId);
+    const response = await deleteBlogById(blogId, userId);
+    return res.send(
+        new ApiResponse(200, response, "Blog deleted successfully")
+    );
 });
 
 export {

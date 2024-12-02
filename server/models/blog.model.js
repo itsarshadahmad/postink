@@ -1,11 +1,18 @@
 import { Blog } from "./blog.mongo.js";
 import { ApiError } from "../utils/ApiError.js";
 
-async function getAllBlogsFromUserId(userId) {
-    const blogs = await Blog.find({ createdBy: userId }).catch((err) => {
-        throw new ApiError(500, "Unable to get blogs by userId!", err);
-    });
-    return blogs;
+async function getAllBlogsFromUserId(userId, page = 1, limit = 10) {
+    const blogs = await Blog.find({ createdBy: userId })
+        .sort({ date: -1 })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .catch((err) => {
+            throw new ApiError(500, "Unable to get blogs by userId!", err);
+        });
+
+    const totalCountOfBlogs = blogs?.length;
+    const totalPages = Math.ceil(totalCountOfBlogs / limit);
+    return { blogs, totalCountOfBlogs, totalPages };
 }
 
 async function getBlogById(blogId) {
@@ -47,13 +54,14 @@ async function createNewBlog(userId, title, content, coverImage) {
 }
 
 async function updateBlogById(
+    userId,
     blogId,
     updatedTitle,
     updatedContent,
     updatedCoverImage
 ) {
     const updatedBlog = await Blog.findByIdAndUpdate(
-        blogId,
+        { _id: blogId, createdBy: userId },
         {
             title: updatedTitle,
             content: updatedContent,
@@ -66,8 +74,11 @@ async function updateBlogById(
     return updatedBlog;
 }
 
-async function deleteBlogById(blogId) {
-    const deletedBlog = await Blog.findByIdAndDelete(blogId).catch((err) => {
+async function deleteBlogById(blogId, userId) {
+    const deletedBlog = await Blog.findByIdAndDelete({
+        _id: blogId,
+        createdBy: userId,
+    }).catch((err) => {
         throw new ApiError(500, "Error deleting blog!", err);
     });
     return deletedBlog;
