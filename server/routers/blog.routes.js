@@ -6,6 +6,10 @@ import {
     getAllBlogsOfUserById,
     handleUpdateBlogById,
     handleDeleteBlogById,
+    handleAddLikeOnBlog,
+    handleRemoveLikeFromBlog,
+    handleNewComment,
+    handleDeleteComment,
 } from "../controllers/blog/blog.controller.js";
 import { upload } from "../middleware/multer.middleware.js";
 import {
@@ -39,5 +43,21 @@ blogRouter
 blogRouter
     .route("/delete/:blogId")
     .delete(regenerateAccessToken, verifyJWT, handleDeleteBlogById);
+
+blogRouter
+    .route("/like/add")
+    .post(regenerateAccessToken, verifyJWT, handleAddLikeOnBlog);
+
+blogRouter
+    .route("/like/remove")
+    .post(regenerateAccessToken, verifyJWT, handleRemoveLikeFromBlog);
+
+blogRouter
+    .route("/comment/add")
+    .post(regenerateAccessToken, verifyJWT, handleNewComment);
+
+blogRouter
+    .route("/comment/remove")
+    .post(regenerateAccessToken, verifyJWT, handleDeleteComment);
 
 export { blogRouter };

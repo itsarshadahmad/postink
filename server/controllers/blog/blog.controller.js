@@ -1,8 +1,11 @@
 import {
+    addCommentToBlog,
+    addLikeToBlog,
     deleteBlogById,
     getAllBlogsByDate,
     getAllBlogsFromUserId,
     getBlogById,
+    removeLikeFromBlog,
     updateBlogById,
 } from "../../models/blog.model.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
@@ -90,6 +93,54 @@ const handleDeleteBlogById = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, response, "Blog deleted successfully"));
 });
 
+const handleAddLikeOnBlog = asyncHandler(async (req, res) => {
+    const { blogId, userId } = req.body;
+    if ([userId, blogId].some((item) => item === "")) {
+        throw new ApiError(400, "All fields are required");
+    }
+
+    const blog = await addLikeToBlog(blogId, userId);
+    return res
+        .status(200)
+        .json(new ApiResponse(200, blog, "Like added successfully"));
+});
+
+const handleRemoveLikeFromBlog = asyncHandler(async (req, res) => {
+    const { blogId, userId } = req.body;
+    if ([userId, blogId].some((item) => item === "")) {
+        throw new ApiError(400, "All fields are required");
+    }
+
+    const blog = await removeLikeFromBlog(blogId, userId);
+    return res
+        .status(200)
+        .json(new ApiResponse(200, blog, "Like removed successfully"));
+});
+
+const handleNewComment = asyncHandler(async (req, res) => {
+    const { blogId, userId, comment } = req.body;
+    if ([userId, blogId, comment].some((item) => item === "")) {
+        throw new ApiError(400, "All fields are required");
+    }
+
+    const newComment = await addCommentToBlog(blogId, userId, comment);
+    return res
+        .status(201)
+        .json(new ApiResponse(201, newComment, "Comment created successfully"));
+});
+
+const handleDeleteComment = asyncHandler(async (req, res) => {
+    const { blogId, userId, commentId } = req.body;
+    if ([userId, blogId, commentId].some((item) => item === "")) {
+        throw new ApiError(400, "All fields are required");
+    }
+
+    const response = await deleteComment(blogId, userId, commentId);
+    return res
+        .status(200)
+        .json(new ApiResponse(200, response, "Comment deleted successfully"));
+});
+
 export {
     getAllLatestBlogs,
     handleCreateNewBlog,
@@ -97,4 +148,8 @@ export {
     getAllBlogsOfUserById,
     handleUpdateBlogById,
     handleDeleteBlogById,
+    handleAddLikeOnBlog,
+    handleRemoveLikeFromBlog,
+    handleNewComment,
+    handleDeleteComment,
 };

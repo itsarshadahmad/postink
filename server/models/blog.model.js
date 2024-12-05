@@ -84,6 +84,50 @@ async function deleteBlogById(blogId, userId) {
     return deletedBlog;
 }
 
+async function addLikeToBlog(blogId, userId) {
+    const updatedBlog = await Blog.findByIdAndUpdate(
+        { _id: blogId },
+        { $addToSet: { likes: userId } },
+        { new: true }
+    ).catch((err) => {
+        throw new ApiError(500, "Error adding like to blog!", err);
+    });
+    return updatedBlog;
+}
+
+async function removeLikeFromBlog(blogId, userId) {
+    const updatedBlog = await Blog.findByIdAndUpdate(
+        { _id: blogId },
+        { $pull: { likes: userId } },
+        { new: true }
+    ).catch((err) => {
+        throw new ApiError(500, "Error removing like from blog!", err);
+    });
+    return updatedBlog;
+}
+
+async function addCommentToBlog(blogId, userId, comment) {
+    const updatedBlog = await Blog.findByIdAndUpdate(
+        { _id: blogId },
+        { $push: { comments: { commentedBy: userId, comment } } },
+        { new: true }
+    ).catch((err) => {
+        throw new ApiError(500, "Error adding comment to blog!", err);
+    });
+    return updatedBlog;
+}
+
+async function removeCommentFromBlog(blogId, userId, commentId) {
+    const updatedBlog = await Blog.findByIdAndUpdate(
+        { _id: blogId },
+        { $pull: { comments: { commentedBy: userId, _id: commentId } } },
+        { new: true }
+    ).catch((err) => {
+        throw new ApiError(500, "Error removing comment from blog!", err);
+    });
+    return updatedBlog;
+}
+
 export {
     getAllBlogsFromUserId,
     getBlogById,
@@ -91,4 +135,8 @@ export {
     createNewBlog,
     updateBlogById,
     deleteBlogById,
+    addLikeToBlog,
+    removeLikeFromBlog,
+    addCommentToBlog,
+    removeCommentFromBlog,
 };
