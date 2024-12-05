@@ -5,6 +5,7 @@ import {
     getAllBlogsByDate,
     getAllBlogsFromUserId,
     getBlogById,
+    removeCommentFromBlog,
     removeLikeFromBlog,
     updateBlogById,
 } from "../../models/blog.model.js";
@@ -135,7 +136,7 @@ const handleDeleteComment = asyncHandler(async (req, res) => {
         throw new ApiError(400, "All fields are required");
     }
 
-    const response = await deleteComment(blogId, userId, commentId);
+    const response = await removeCommentFromBlog(blogId, userId, commentId);
     return res
         .status(200)
         .json(new ApiResponse(200, response, "Comment deleted successfully"));
