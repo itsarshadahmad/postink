@@ -18,6 +18,6 @@ module.exports = {
             { allowConstantExport: true },
         ],
         // Use 4 spaces for indentation, or ["error", "tab"] tabs for indentation
-        indent: ["error", 4],
+        indent: ["warn", 4],
     },
 };

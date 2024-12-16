@@ -1,7 +1,44 @@
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import Input from "../components/Input.component";
+import { useForm } from "react-hook-form";
+import api from "../services/api.service.js";
+import { useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useDispatch } from "react-redux";
+import { login } from "../store/authSlice.js";
 
 export default function Signin() {
+    const { register, handleSubmit } = useForm();
+    const [showError, setShowError] = useState();
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const onSubmit = async (data) => {
+        setShowError("");
+        const { email, password } = data;
+        await api
+            .post("/user/login", {
+                email,
+                password,
+            })
+            .then((response) => {
+                const data = response.data.data;
+                const { success } = response.data;
+                toast.success("Successfully Authenticated");
+                dispatch(login(data));
+                if (success) navigate("/");
+            })
+            .catch((error) => {
+                const errorResponse = error.response.data;
+                setShowError(errorResponse.message);
+                toast.error(
+                    errorResponse.message ||
+                        "Something went wrong, please try again."
+                );
+            });
+    };
+
     return (
         <div className="flex flex-1 flex-col justify-center px-6 py-12 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -11,10 +48,19 @@ export default function Signin() {
             </div>
 
             <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-                <form action="#" method="POST" className="space-y-6">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                     <div>
-                        <Input type={"email"} label={"Email address *"} />
-                        <Input type={"password"} label={"Password *"} />
+                        <Input
+                            type={"email"}
+                            label={"Email address *"}
+                            {...register("email", { required: true })}
+                        />
+                        <Input
+                            type={"password"}
+                            label={"Password *"}
+                            {...register("password", { required: true })}
+                        />
+                        <p className="text-sm text-red-600 mt-2">{showError}</p>
                         <div className="text-sm flex justify-end">
                             <Link
                                 to="#"
@@ -24,6 +70,7 @@ export default function Signin() {
                             </Link>
                         </div>
                     </div>
+                    <ToastContainer />
                     <div>
                         <button
                             type="submit"

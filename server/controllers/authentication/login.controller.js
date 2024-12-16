@@ -26,6 +26,9 @@ const handleUserLogin = asyncHandler(async (req, res) => {
     if (!user) {
         throw new ApiError(401, "Invalid email or password");
     }
+    if (!user.password && user.type === "google") {
+        throw new ApiError(401, "Please authenticate using google");
+    }
     const isPasswordCorrect = await user.isPasswordCorrect(password);
     if (!isPasswordCorrect) {
         throw new ApiError(401, "Invalid email or password");
@@ -44,8 +47,10 @@ const handleUserLogin = asyncHandler(async (req, res) => {
             new ApiResponse(
                 200,
                 {
+                    fullName: user.fullName,
                     email: user.email,
                     _id: user._id,
+                    avatar: user?.avatar,
                     blogs: user.blogs,
                 },
                 "User authenticated!"

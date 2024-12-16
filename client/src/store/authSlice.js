@@ -1,4 +1,4 @@
-import { createSlice, nanoid } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     isAuthenticated: false,
@@ -11,10 +11,11 @@ export const authSlice = createSlice({
     reducers: {
         login: (state, action) => {
             const user = {
-                id: nanoid(),
+                _id: action.payload._id,
                 fullName: action.payload.fullName,
                 email: action.payload.email,
-                avatar: action.payload.avatar,
+                avatar: action.payload?.avatar,
+                blogs: action.payload.blogs,
             };
             state.user = user;
             state.isAuthenticated = true;
