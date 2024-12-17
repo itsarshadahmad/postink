@@ -30,6 +30,8 @@ const handleUserSignup = asyncHandler(async (req, res) => {
         fullName: user.fullName,
         blogs: user.blogs,
         avatar: user?.avatar,
+        refreshToken,
+        accessToken,
     };
 
     return res

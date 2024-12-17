@@ -52,6 +52,8 @@ const handleUserLogin = asyncHandler(async (req, res) => {
                     _id: user._id,
                     avatar: user?.avatar,
                     blogs: user.blogs,
+                    refreshToken,
+                    accessToken,
                 },
                 "User authenticated!"
             )
@@ -68,7 +70,13 @@ const handleOAuthGoogleCallback = asyncHandler(async (req, res) => {
     return res
         .cookie("accessToken", accessToken, accessTokenConfig)
         .cookie("refreshToken", refreshToken, refreshTokenConfig)
-        .json(new ApiResponse(200, { success: true }, "User Authenticated!"));
+        .json(
+            new ApiResponse(
+                200,
+                { success: true, refreshToken, accessToken },
+                "User Authenticated!"
+            )
+        );
 });
 
 export { handleUserLogin, handleOAuthGoogleCallback };

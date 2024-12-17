@@ -14,18 +14,18 @@ export default function Signin() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const onSubmit = async (data) => {
+    const onSubmit = (data) => {
         setShowError("");
         const { email, password } = data;
-        await api
-            .post("/user/login", {
-                email,
-                password,
-            })
+        api.post("/user/login", {
+            email,
+            password,
+        })
             .then((response) => {
                 const data = response.data.data;
                 const { success } = response.data;
                 toast.success("Successfully Authenticated");
+                // TODO: Add few data point to for initial authentication
                 dispatch(login(data));
                 if (success) navigate("/");
             })

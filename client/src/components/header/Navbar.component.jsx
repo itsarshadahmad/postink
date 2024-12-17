@@ -1,14 +1,32 @@
-"use client";
-
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Dialog, DialogPanel, PopoverGroup } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Link, NavLink } from "react-router";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import api from "../../services/api.service.js";
+import { logout } from "../../store/authSlice.js";
 
 export default function Navbar() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+    const dispatch = useDispatch();
+
+    const logoutUser = useCallback(
+        (event) => {
+            event.preventDefault();
+            api.post("/user/logout", {})
+                .then((response) => {
+                    const data = response.data;
+                    if (data.success) {
+                        dispatch(logout());
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        },
+        [dispatch]
+    );
 
     const navigations = [
         { text: "Dashboard", navTo: "/dashboard" },
@@ -25,7 +43,7 @@ export default function Navbar() {
                 <div className="flex lg:flex-1">
                     <Link to="/" className="-m-1.5 p-1.5">
                         <p className="text-lg font-semibold	text-gray-700">
-                            Blog App
+                            Post Ink
                         </p>
                     </Link>
                 </div>
@@ -54,12 +72,21 @@ export default function Navbar() {
                         ))}
                 </PopoverGroup>
                 <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-                    <NavLink
-                        to="/signin"
-                        className="text-sm/6 font-semibold text-gray-900"
-                    >
-                        Sign in <span aria-hidden="true">&rarr;</span>
-                    </NavLink>
+                    {!isAuthenticated ? (
+                        <NavLink
+                            to="/signin"
+                            className="text-sm/6 font-semibold text-gray-900"
+                        >
+                            Sign in <span aria-hidden="true">&rarr;</span>
+                        </NavLink>
+                    ) : (
+                        <button
+                            className="text-sm/6 font-semibold text-white bg-red-500 py-1 px-3 rounded-full shadow-sm drop-shadow-sm hover:bg-red-700"
+                            onClick={(e) => logoutUser(e)}
+                        >
+                            Logout
+                        </button>
+                    )}
                 </div>
             </nav>
             <Dialog
@@ -73,7 +100,7 @@ export default function Navbar() {
                         <div className="flex lg:flex-1">
                             <Link to="/" className="-m-1.5 p-1.5">
                                 <p className="text-xl font-semibold	text-gray-700">
-                                    Blog App
+                                    Post Ink
                                 </p>
                             </Link>
                         </div>
@@ -92,23 +119,33 @@ export default function Navbar() {
                                 {isAuthenticated &&
                                     navigations.map((nav, index) => (
                                         <div key={index}>
-                                            <Link
+                                            <NavLink
                                                 key={index}
                                                 to={nav.navTo}
                                                 className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
                                             >
                                                 {nav.text}
-                                            </Link>
+                                            </NavLink>
                                         </div>
                                     ))}
                             </div>
                             <div className="py-6">
-                                <Link
-                                    to="/signin"
-                                    className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
-                                >
-                                    Sign in
-                                </Link>
+                                {!isAuthenticated ? (
+                                    <NavLink
+                                        to="/signin"
+                                        className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
+                                    >
+                                        Sign in{" "}
+                                        <span aria-hidden="true">&rarr;</span>
+                                    </NavLink>
+                                ) : (
+                                    <button
+                                        className="-mx-3 w-full block text-base/7  font-semibold text-white bg-red-500 py-1 px-3 rounded-full shadow-sm drop-shadow-sm hover:bg-red-700"
+                                        onClick={(e) => logoutUser(e)}
+                                    >
+                                        Logout
+                                    </button>
+                                )}
                             </div>
                         </div>
                     </div>
