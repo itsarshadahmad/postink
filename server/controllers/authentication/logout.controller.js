@@ -6,6 +6,8 @@ import { decodeRefreshToken } from "../../utils/token.js";
 
 const handleUserLogout = asyncHandler(async (req, res) => {
     const refreshToken = req.cookies.refreshToken || req.body.refreshToken;
+    const _id = req.body._id;
+
     if (!refreshToken) {
         throw new ApiError(
             401,
@@ -16,14 +18,11 @@ const handleUserLogout = asyncHandler(async (req, res) => {
 
     const decode = await decodeRefreshToken(refreshToken);
     if (!decode) {
-        throw new ApiError(
-            401,
-            { error: "Invalid refresh token" },
-            "Unauthorized Request"
-        );
+        await removeRefreshToken(_id);
+    } else {
+        await removeRefreshToken(decode._id);
     }
 
-    await removeRefreshToken(decode._id);
     await res.clearCookie("accessToken");
     await res.clearCookie("refreshToken");
     await req.session.destroy();

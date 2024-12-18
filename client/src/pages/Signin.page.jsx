@@ -3,10 +3,12 @@ import Input from "../components/Input.component";
 import { useForm } from "react-hook-form";
 import api from "../services/api.service.js";
 import { useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useDispatch } from "react-redux";
 import { login } from "../store/authSlice.js";
+import GoogleOAuth from "../components/Google-OAuth.component.jsx";
+import CONSTANT from "../conf/constant.js";
 
 export default function Signin() {
     const { register, handleSubmit } = useForm();
@@ -25,7 +27,6 @@ export default function Signin() {
                 const data = response.data.data;
                 const { success } = response.data;
                 toast.success("Successfully Authenticated");
-                // TODO: Add few data point to for initial authentication
                 dispatch(login(data));
                 if (success) navigate("/");
             })
@@ -70,7 +71,6 @@ export default function Signin() {
                             </Link>
                         </div>
                     </div>
-                    <ToastContainer />
                     <div>
                         <button
                             type="submit"
@@ -79,6 +79,13 @@ export default function Signin() {
                             Sign in
                         </button>
                     </div>
+                </form>
+                {/* := TODO: Complete google oAuth */}
+                <form
+                    action={`${CONSTANT.API_URL}/api/user/auth/google`}
+                    method="post"
+                >
+                    <GoogleOAuth />
                 </form>
 
                 <p className="mt-10 text-center text-sm/6 text-gray-500">

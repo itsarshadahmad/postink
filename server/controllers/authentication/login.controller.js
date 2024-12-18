@@ -2,6 +2,7 @@ import { findUserByEmail } from "../../models/user.model.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
+import querystring from "querystring";
 
 const accessTokenConfig = {
     httpOnly: true,
@@ -66,17 +67,18 @@ const handleOAuthGoogleCallback = asyncHandler(async (req, res) => {
     if (!refreshToken) {
         refreshToken = req.user.generateRefreshToken();
     }
+    const query = querystring.stringify({
+        _id: String(req.user._id),
+        email: req.user.email,
+        fullName: req.user.fullName,
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+    });
 
-    return res
+    return await res
         .cookie("accessToken", accessToken, accessTokenConfig)
         .cookie("refreshToken", refreshToken, refreshTokenConfig)
-        .json(
-            new ApiResponse(
-                200,
-                { success: true, refreshToken, accessToken },
-                "User Authenticated!"
-            )
-        );
+        .redirect(`${process.env.CLIENT_URL}/auth/google?${query}`);
 });
 
 export { handleUserLogin, handleOAuthGoogleCallback };

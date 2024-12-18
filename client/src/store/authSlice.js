@@ -55,7 +55,7 @@ export const authSlice = createSlice({
                 localStorage.removeItem("refreshToken");
                 localStorage.removeItem("_id");
                 localStorage.removeItem("email");
-            }
+            } else return;
         },
         signup: (state, action) => {
             const user = {

@@ -5,6 +5,7 @@ import { Link, NavLink } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import api from "../../services/api.service.js";
 import { logout } from "../../store/authSlice.js";
+import { ToastContainer } from "react-toastify";
 
 export default function Navbar() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -14,7 +15,8 @@ export default function Navbar() {
     const logoutUser = useCallback(
         (event) => {
             event.preventDefault();
-            api.post("/user/logout", {})
+            const _id = localStorage.getItem("_id");
+            api.post("/user/logout", { _id })
                 .then((response) => {
                     const data = response.data;
                     if (data.success) {
@@ -151,6 +153,7 @@ export default function Navbar() {
                     </div>
                 </DialogPanel>
             </Dialog>
+            <ToastContainer />
         </header>
     );
 }
