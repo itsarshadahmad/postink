@@ -5,6 +5,7 @@ import PageNotFound from "../pages/404.page";
 import Signin from "../pages/Signin.page";
 import Signup from "../pages/Signup.page";
 import GoogleAuthResponse from "../components/GoogleAuthResponse";
+import Blog from "../pages/Blog.page";
 
 function AppRouter() {
     return (
@@ -14,13 +15,13 @@ function AppRouter() {
                     <Route path="" element={<App />} />
                     <Route path="signin" element={<Signin />} />
                     <Route path="signup" element={<Signup />} />
-                    <Route path="user">
-                        <Route index element={<h1>User</h1>} />
-                    </Route>
                     <Route
                         path="auth/google"
                         element={<GoogleAuthResponse />}
                     />
+                    <Route path="blog">
+                        <Route path=":_id" element={<Blog />} />
+                    </Route>
                     <Route path="*" element={<PageNotFound />} />
                 </Route>
             </Routes>
