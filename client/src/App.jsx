@@ -14,7 +14,6 @@ function App() {
     useEffect(() => {
         api.get(`/blog?page=${params.get("page")}`).then((response) => {
             const apiResponse = response.data;
-            console.log(apiResponse);
             setTotalPages(apiResponse.data.totalPages);
             setTotalCountOfBlogs(apiResponse.data.totalCountOfBlogs);
             setBlogs(apiResponse.data.blogs);
@@ -23,7 +22,6 @@ function App() {
     return (
         <div>
             <Card blogs={blogs} />
-            {/* : TODO: Complete pagination integration */}
             <Pagination
                 setPage={setPage}
                 page={page}
