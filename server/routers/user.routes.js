@@ -7,6 +7,7 @@ import {
 } from "../controllers/authentication/login.controller.js";
 import { handleUserLogout } from "../controllers/authentication/logout.controller.js";
 import { upload } from "../middleware/multer.middleware.js";
+import { handleUserProfile } from "../controllers/authentication/profile.controller.js";
 
 const userRouter = Router();
 
@@ -26,6 +27,8 @@ userRouter.route("/auth/google/callback").get(
     }),
     handleOAuthGoogleCallback
 );
+
+userRouter.route("/public/profile/:_id").get(handleUserProfile);
 
 userRouter.route("/logout").post(handleUserLogout);
 

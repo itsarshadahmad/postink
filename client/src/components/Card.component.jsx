@@ -27,10 +27,8 @@ export default function Card({ blogs }) {
                                         className="w-80 max-lg:w-full rounded-lg bg-white object-cover group-hover:opacity-75 max-sm:h-80 sm:aspect-[2/1] lg:aspect-square"
                                     />
                                     <h3 className="mt-2 text-sm text-gray-900 font-bold">
-                                        <h1>
-                                            <span className="absolute inset-0" />
-                                            {blog.title}
-                                        </h1>
+                                        <span className="absolute inset-0" />
+                                        {blog.title}
                                     </h3>
                                     <p className="text-base font-semibold text-gray-700 mb-6">
                                         {blog.content?.substring(0, 50)}...
