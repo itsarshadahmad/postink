@@ -9,7 +9,7 @@ function App() {
     const [blogs, setBlogs] = useState([]);
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
-    const [totalCountOfBlogs, setTotalCountOfBlogs] = useState();
+    const [totalCountOfBlogs, setTotalCountOfBlogs] = useState(1);
 
     useEffect(() => {
         api.get(`/blog?page=${params.get("page")}`).then((response) => {

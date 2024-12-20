@@ -1,6 +1,14 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router";
+import {
+    inactiveNextButtonStyles,
+    activeNextButtonStyles,
+    activePageStyles,
+    activePrevButtonStyles,
+    inactivePageStyles,
+    inactivePrevButtonStyles,
+} from "./Pagination.styles";
 
 export default function Pagination({
     setPage,
@@ -9,14 +17,6 @@ export default function Pagination({
     totalCountOfBlogs,
 }) {
     // Styles for pagination buttons
-    const activePageStyles =
-        "relative z-10 inline-flex items-center bg-indigo-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600";
-    const inactivePageStyles =
-        "relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-gray-300 ring-inset hover:bg-gray-50 focus:z-20 focus:outline-offset-0";
-    const inactiveButtonStyles =
-        "relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-gray-300 ring-inset hover:bg-gray-50 focus:z-20 focus:outline-offset-0";
-    const activeButtonStyles =
-        "relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-gray-300 ring-inset hover:bg-gray-50 focus:z-20 focus:outline-offset-0 text-black";
 
     const navigate = useNavigate();
     const [params] = useSearchParams();
@@ -83,8 +83,8 @@ export default function Pagination({
                         <button
                             className={
                                 page > 1
-                                    ? activeButtonStyles
-                                    : inactiveButtonStyles
+                                    ? activePrevButtonStyles
+                                    : inactivePrevButtonStyles
                             }
                             onClick={handlePreviousPageButton}
                         >
@@ -115,8 +115,8 @@ export default function Pagination({
                             to="#"
                             className={
                                 page < totalPages
-                                    ? activeButtonStyles
-                                    : inactiveButtonStyles
+                                    ? activeNextButtonStyles
+                                    : inactiveNextButtonStyles
                             }
                             onClick={handleNextPageButton}
                         >
