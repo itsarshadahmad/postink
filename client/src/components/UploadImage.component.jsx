@@ -3,7 +3,7 @@ import { forwardRef } from "react";
 export default forwardRef(function UploadImage({ label, ...props }, ref) {
     return (
         <div className=" w-full">
-            <div className="max-w-md mx-auto">
+            <div className="min-w-md mx-auto">
                 <label className="block text-sm/6 font-medium text-gray-900 mb-2">
                     {label}
                 </label>

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../services/api.service";
 import { useNavigate, useParams } from "react-router";
 import SocialInteraction from "../components/SocialInteraction.component";
+import parse from "html-react-parser";
 
 export default function Blog() {
     const [blog, setBlog] = useState();
@@ -52,11 +53,13 @@ export default function Blog() {
 
                     {/* Blog post content */}
                     <div className="prose prose-sm sm:prose lg:prose-lg xl:prose-xl mx-auto">
-                        <p>{blog?.content}</p>
+                        {/* <p>{blog?.content}</p> */}
+                        {blog?.content && parse(blog?.content)}
+                        {/* <div dangerouslySetInnerHTML={blog?.content} /> */}
                     </div>
                 </div>
             </div>
-            <SocialInteraction comments={comments} likes={likes} />
+            <SocialInteraction comments={comments} likes={likes} blogId={_id} />
         </>
     );
 }

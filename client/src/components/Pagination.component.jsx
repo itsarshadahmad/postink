@@ -16,8 +16,6 @@ export default function Pagination({
     totalPages,
     totalCountOfBlogs,
 }) {
-    // Styles for pagination buttons
-
     const navigate = useNavigate();
     const [params] = useSearchParams();
 

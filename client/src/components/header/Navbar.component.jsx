@@ -32,7 +32,7 @@ export default function Navbar() {
 
     const navigations = [
         { text: "Dashboard", navTo: "/dashboard" },
-        { text: "Profile", navTo: "/profile" },
+        { text: "Create", navTo: "/blog/new" },
         { text: "Settings", navTo: "/settings" },
     ];
 

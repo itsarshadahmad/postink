@@ -7,11 +7,8 @@ import api from "../services/api.service";
 export default function Comment({ styles, userId, dateTime, comment }) {
     const [userInfo, setUserInfo] = useState({});
 
-    // TODO: Add new comment, like comment, delete comment
-
     useEffect(() => {
         api.get(`/user/public/profile/${userId}`).then((response) => {
-            console.log(response.data.data);
             setUserInfo(response.data.data);
         });
     }, [userId]);

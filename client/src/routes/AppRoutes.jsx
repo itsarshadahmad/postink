@@ -7,6 +7,7 @@ import Signup from "../pages/Signup.page";
 import GoogleAuthResponse from "../components/GoogleAuthResponse";
 import Blog from "../pages/Blog.page";
 import Dashboard from "../pages/Dashboard.page";
+import NewBlog from "../pages/NewBlog.page";
 
 function AppRouter() {
     return (
@@ -23,6 +24,7 @@ function AppRouter() {
                     <Route path="dashboard" element={<Dashboard />} />
                     <Route path="blog">
                         <Route path=":_id" element={<Blog />} />
+                        <Route path="new" element={<NewBlog />} />
                     </Route>
                     <Route path="*" element={<PageNotFound />} />
                 </Route>

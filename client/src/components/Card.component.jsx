@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import placeholderCoverImage from "../assets/No_Cover_Found.png";
+import parse from "html-react-parser";
 
 export default function Card({ blogs }) {
     return (
@@ -31,7 +32,10 @@ export default function Card({ blogs }) {
                                         {blog.title}
                                     </h3>
                                     <p className="text-base font-semibold text-gray-700 mb-6">
-                                        {blog.content?.substring(0, 50)}...
+                                        {blog?.content &&
+                                            parse(
+                                                blog?.content?.substring(0, 50)
+                                            )}...
                                     </p>
                                 </Link>
                             ))}
