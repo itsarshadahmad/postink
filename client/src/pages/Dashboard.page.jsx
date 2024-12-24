@@ -21,7 +21,7 @@ export default function Dashboard() {
 
     return (
         <div>
-            <Card blogs={blogs} />
+            <Card blogs={blogs} isUpdateRequest={true} />
         </div>
     );
 }

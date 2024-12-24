@@ -85,10 +85,10 @@ const handleUpdateBlogById = asyncHandler(async (req, res) => {
 });
 
 const handleDeleteBlogById = asyncHandler(async (req, res) => {
-    const userId = req.user._id;
+    const userId = req.body.userId;
     const { blogId } = req.params;
     const response = await deleteBlogById(blogId, userId);
-    removeImage(response.coverImage);
+    await removeImage(response?.coverImage);
     return res
         .status(200)
         .json(new ApiResponse(200, response, "Blog deleted successfully"));

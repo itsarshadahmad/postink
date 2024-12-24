@@ -5,11 +5,13 @@ import { useForm } from "react-hook-form";
 import UploadImage from "../components/UploadImage.component";
 import api from "../services/api.service";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router";
 
 export default function NewBlog() {
     const { register, handleSubmit } = useForm();
     const editor = useRef(null);
     const [content, setContent] = useState("");
+    const navigate = useNavigate();
     const config = useMemo(
         () => ({
             readonly: false,
@@ -21,9 +23,9 @@ export default function NewBlog() {
     const onSubmit = (data) => {
         api.post("/blog/new", { ...data, content })
             .then((response) => {
-                console.log(response);
                 toast.success("Blog Created Successfully!");
                 setContent("");
+                navigate("/dashboard");
             })
             .catch((error) => console.error(error));
     };

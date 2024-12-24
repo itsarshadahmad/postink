@@ -33,7 +33,6 @@ export default function Navbar() {
     const navigations = [
         { text: "Dashboard", navTo: "/dashboard" },
         { text: "Create", navTo: "/blog/new" },
-        { text: "Settings", navTo: "/settings" },
     ];
 
     return (

@@ -8,6 +8,7 @@ import GoogleAuthResponse from "../components/GoogleAuthResponse";
 import Blog from "../pages/Blog.page";
 import Dashboard from "../pages/Dashboard.page";
 import NewBlog from "../pages/NewBlog.page";
+import DeleteBlog from "../pages/DeleteBlog.page";
 
 function AppRouter() {
     return (
@@ -25,6 +26,7 @@ function AppRouter() {
                     <Route path="blog">
                         <Route path=":_id" element={<Blog />} />
                         <Route path="new" element={<NewBlog />} />
+                        <Route path="delete/:blogId" element={<DeleteBlog />} />
                     </Route>
                     <Route path="*" element={<PageNotFound />} />
                 </Route>
